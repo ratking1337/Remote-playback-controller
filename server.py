@@ -15,7 +15,7 @@ def interpret_args():
 
 def connection():
     args = interpret_args()
-    port = args['port']
+    port = int(args['port'])
 
     s = socket.socket(socket.AF_INET)
     s.setsockopt(socket.IPPROTO_IP, socket.SO_REUSEADDR, 1)
