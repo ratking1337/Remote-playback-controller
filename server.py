@@ -1,3 +1,6 @@
+#!/usr/bin/python  
+
+import time
 import os
 import sys
 import socket
@@ -26,6 +29,11 @@ def connection():
 
 def main():
     connection()
+
+    while True:
+        time.sleep(0.1)
+        pass
+
 
 if __name__ == '__main__':
     main()

@@ -2,6 +2,7 @@
 
 import os
 import sys
+import time
 import socket
 
 def get_arg(arg, status, arr):
@@ -25,11 +26,15 @@ def connection():
     port = int(args['port'])
 
     s.connect((host, port))
-    print(s.recv(1024))
-    s.close()
+    s.recv(1024)
+    #s.close()
 
 def main():      
     connection()
+
+    while True:
+        time.sleep(0.1)
+        pass
 
 if __name__ == '__main__':
     main()
