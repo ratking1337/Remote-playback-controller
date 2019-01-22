@@ -28,7 +28,6 @@ def connection():
     s = socket.socket()
     host = args['host']
     port = int(args['port'])
-
     s.connect((host, port))
 
 def read_commands(s):

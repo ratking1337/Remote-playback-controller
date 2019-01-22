@@ -5,6 +5,8 @@ import os
 import sys
 import socket
 import json
+import psutil
+from multiprocessing import Process, Queue
 
 from playsound import playsound
 dir = './'
@@ -19,6 +21,12 @@ def interpret_args():
     args = {}
     args['port'] = get_arg('-p', 'ERR: No port specified', sys.argv)
     return args
+
+def kill_player_process(name):
+    for p in psutil.process_iter():
+        if name in p.name() or name in ' '.join(p.cmdline()):
+            p.terminate()
+            p.wait()
 
 s = None
 
@@ -37,12 +45,20 @@ def connection():
     return conn
 
 def exec_command(cmmd):
-    if cmmd[:10] == 'play song ':
-        play_sound(find_songs(search_dir(None), [cmmd[10:]]))
+    p = None
+
+    if cmmd[:10] == 'play song ': 
+        p = Process(target = play_sound, args = 
+            (find_songs(search_dir(None), [cmmd[10:]])))
+
     elif cmmd[:9] == 'play all':
-        play_sound(find_songs(search_dir(None), None))
-    elif cmmd[:11] == 'list songs ':
-        pass
+        p = Process(target = play_sound, args = 
+            (find_songs(search_dir(None), None)))
+    elif cmmd[:4] == 'stop':
+        kill_player_process('mpg321')
+
+    if p: 
+        p.start()
 
 def find_songs(json_string, number):
     dict = None
@@ -69,13 +85,15 @@ def search_dir(none):
     return json.dumps(indexed_names)
 
 def play_sound(names):
+        if type(names) is not list:
+            names = [names] 
+
         for name in names:
-            print(name)
-            #playsound(name)
+            os.system('mpg321 ' + './' + name)
 
 def main():
     conn = connection()
-
+    
     while True:
         conn.send(search_dir(None))
         rcvdData = conn.recv(1024).decode()
